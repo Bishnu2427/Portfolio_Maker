@@ -9,15 +9,15 @@ class PreviewManager:
     _procs: dict = {}
 
     def start(self, portfolio_dir: str, port: int, portfolio_id: str) -> int:
-        with open(os.path.join(portfolio_dir, 'port.txt'), 'w') as f:
-            f.write(str(port))
-
         app_path = os.path.join(portfolio_dir, 'app.py')
+        # Pass port via env var — no local port.txt file written
+        env = {**os.environ, 'PORTFOLIO_PORT': str(port)}
         proc = subprocess.Popen(
             [sys.executable, app_path],
             cwd=portfolio_dir,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
+            env=env,
         )
         self.__class__._procs[portfolio_id] = proc
         PortRegistry.register(portfolio_id, port, proc.pid)

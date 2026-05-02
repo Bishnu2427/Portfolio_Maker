@@ -1,5 +1,4 @@
 import os
-import json
 import shutil
 import base64
 from datetime import datetime
@@ -44,10 +43,6 @@ class PortfolioGenerator:
             os.makedirs(images_dir, exist_ok=True)
             shutil.copy2(photo_path, os.path.join(images_dir, f'profile.{ext}'))
 
-        # Save data.json
-        with open(os.path.join(out_dir, 'data.json'), 'w', encoding='utf-8') as f:
-            json.dump(cv_data, f, indent=2, ensure_ascii=False)
-
         # Render template
         env = Environment(loader=FileSystemLoader(tpl_dir))
         template = env.get_template('index.html')
@@ -64,9 +59,6 @@ class PortfolioGenerator:
 
         self._write_flask_app(out_dir)
         self._write_requirements(out_dir)
-
-        with open(os.path.join(out_dir, 'port.txt'), 'w') as f:
-            f.write('')
 
         return out_dir
 
@@ -86,7 +78,7 @@ class PortfolioGenerator:
     @staticmethod
     def _write_flask_app(out_dir: str):
         content = """\
-from flask import Flask, send_from_directory, abort
+from flask import Flask, send_from_directory
 import os
 
 app = Flask(__name__, static_folder='static')
@@ -100,13 +92,8 @@ def static_files(filename):
     return send_from_directory('static', filename)
 
 if __name__ == '__main__':
-    port_file = os.path.join(os.path.dirname(__file__), 'port.txt')
-    port = 5001
-    if os.path.exists(port_file):
-        try:
-            port = int(open(port_file).read().strip())
-        except ValueError:
-            pass
+    # Port is injected via PORTFOLIO_PORT env var by PreviewManager — no local file needed
+    port = int(os.environ.get('PORTFOLIO_PORT', '5001'))
     print(f'[Portfolio Preview] Running on http://localhost:{port}')
     app.run(host='0.0.0.0', port=port, debug=False)
 """
