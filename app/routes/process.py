@@ -1,7 +1,6 @@
 import os
 import uuid
 import json
-import time
 from flask import Blueprint, request, jsonify, session, Response, stream_with_context
 from app.services.cv_parser import CVParser
 from app.services.ai_service import AIService
@@ -117,7 +116,12 @@ def generate(portfolio_id):
             pid = prev.start(portfolio_dir, port, portfolio_id)
             Portfolio.update(portfolio_id, {'port': port, 'pid': pid, 'status': 'preview'})
 
-            time.sleep(2)
+            # Wait until the server is actually accepting connections (up to 20 s)
+            yield _event({'step': 6, 'message': 'Waiting for preview server to be ready...', 'progress': 92})
+            if not prev.wait_ready(port):
+                logs = prev.get_log(portfolio_id)
+                yield _event({'error': f'Preview server did not start on port {port}.\n\nLogs:\n{logs}'})
+                return
 
             yield _event({
                 'step': 7,

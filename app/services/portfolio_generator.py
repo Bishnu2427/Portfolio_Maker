@@ -81,21 +81,21 @@ class PortfolioGenerator:
 from flask import Flask, send_from_directory
 import os
 
-app = Flask(__name__, static_folder='static')
+BASE = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'index.html')
+    return send_from_directory(BASE, 'index.html')
 
-@app.route('/static/<path:filename>')
-def static_files(filename):
-    return send_from_directory('static', filename)
+@app.route('/static/<path:path>')
+def static_files(path):
+    return send_from_directory(os.path.join(BASE, 'static'), path)
 
 if __name__ == '__main__':
-    # Port is injected via PORTFOLIO_PORT env var by PreviewManager — no local file needed
     port = int(os.environ.get('PORTFOLIO_PORT', '5001'))
-    print(f'[Portfolio Preview] Running on http://localhost:{port}')
-    app.run(host='0.0.0.0', port=port, debug=False)
+    print(f'[Portfolio Preview] Listening on http://0.0.0.0:{port}', flush=True)
+    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
 """
         with open(os.path.join(out_dir, 'app.py'), 'w') as f:
             f.write(content)
