@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{{ data.name }} — {{ data.title }}" />
+  <meta property="og:title" content="{{ data.name }} | Portfolio" />
+  <meta property="og:description" content="{{ data.summary }}" />
+  <title>{{ data.name }} | Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-left">
+      {% if photo_base64 %}
+      <img class="profile-photo" src="data:{{ photo_mime }};base64,{{ photo_base64 }}" alt="{{ data.name }}" />
+      {% else %}
+      <div class="profile-placeholder">{{ data.name[0] if data.name else 'P' }}</div>
+      {% endif %}
+      <div class="header-info">
+        <h1 class="name">{{ data.name }}</h1>
+        <p class="title-tag">{{ data.title }}</p>
+        <div class="contact-row">
+          {% if data.email %}<a href="mailto:{{ data.email }}" class="contact-chip">✉ {{ data.email }}</a>{% endif %}
+          {% if data.phone %}<span class="contact-chip">☎ {{ data.phone }}</span>{% endif %}
+          {% if data.location %}<span class="contact-chip">📍 {{ data.location }}</span>{% endif %}
+        </div>
+        <div class="social-row">
+          {% if data.linkedin %}<a href="{{ data.linkedin }}" target="_blank" class="social-link">LinkedIn</a>{% endif %}
+          {% if data.github %}<a href="{{ data.github }}" target="_blank" class="social-link">GitHub</a>{% endif %}
+          {% if data.website %}<a href="{{ data.website }}" target="_blank" class="social-link">Website</a>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="sticky-nav" id="sticky-nav">
+  <div class="nav-inner">
+    <a href="#about" class="nav-link">About</a>
+    {% if data.experience %}<a href="#experience" class="nav-link">Experience</a>{% endif %}
+    {% if data.education %}<a href="#education" class="nav-link">Education</a>{% endif %}
+    {% if data.skills %}<a href="#skills" class="nav-link">Skills</a>{% endif %}
+    {% if data.projects %}<a href="#projects" class="nav-link">Projects</a>{% endif %}
+    {% if data.certifications %}<a href="#certifications" class="nav-link">Certifications</a>{% endif %}
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+  <div class="container">
+
+    <!-- ABOUT -->
+    {% if data.summary %}
+    <section id="about" class="section">
+      <h2 class="section-title">About Me</h2>
+      <p class="summary-text">{{ data.summary }}</p>
+    </section>
+    {% endif %}
+
+    <!-- EXPERIENCE -->
+    {% if data.experience %}
+    <section id="experience" class="section">
+      <h2 class="section-title">Professional Experience</h2>
+      <div class="timeline">
+        {% for exp in data.experience %}
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="exp-header">
+              <div>
+                <h3 class="exp-title">{{ exp.title }}</h3>
+                <p class="exp-company">{{ exp.company }}{% if exp.location %} · {{ exp.location }}{% endif %}</p>
+              </div>
+              <span class="exp-dates">{{ exp.start_date }}{% if exp.end_date %} – {{ exp.end_date }}{% endif %}</span>
+            </div>
+            {% if exp.description %}
+            <ul class="exp-list">
+              {% for item in exp.description %}
+              <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- EDUCATION -->
+    {% if data.education %}
+    <section id="education" class="section">
+      <h2 class="section-title">Education</h2>
+      <div class="edu-grid">
+        {% for edu in data.education %}
+        <div class="edu-card">
+          <div class="edu-header">
+            <div>
+              <h3 class="edu-degree">{{ edu.degree }}{% if edu.field %} in {{ edu.field }}{% endif %}</h3>
+              <p class="edu-inst">{{ edu.institution }}</p>
+            </div>
+            <span class="edu-dates">{{ edu.start_date }}{% if edu.end_date %} – {{ edu.end_date }}{% endif %}</span>
+          </div>
+          {% if edu.gpa %}<p class="edu-gpa">GPA: {{ edu.gpa }}</p>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- SKILLS -->
+    {% if data.skills or data.skill_categories %}
+    <section id="skills" class="section">
+      <h2 class="section-title">Skills & Expertise</h2>
+      {% if data.skill_categories %}
+        <div class="skills-categories">
+          {% for cat, skills in data.skill_categories.items() %}
+          <div class="skill-group">
+            <h4 class="skill-cat">{{ cat }}</h4>
+            <div class="skill-tags">
+              {% for s in skills %}
+              <span class="skill-tag">{{ s }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="skill-tags">
+          {% for s in data.skills %}
+          <span class="skill-tag">{{ s }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <!-- PROJECTS -->
+    {% if data.projects %}
+    <section id="projects" class="section">
+      <h2 class="section-title">Projects</h2>
+      <div class="projects-grid">
+        {% for proj in data.projects %}
+        <div class="project-card">
+          <div class="project-header">
+            <h3 class="project-name">{{ proj.name }}</h3>
+            {% if proj.url %}<a href="{{ proj.url }}" target="_blank" class="project-link">↗ View</a>{% endif %}
+          </div>
+          <p class="project-desc">{{ proj.description }}</p>
+          {% if proj.technologies %}
+          <div class="skill-tags mt-12">
+            {% for tech in proj.technologies %}<span class="skill-tag skill-tag-sm">{{ tech }}</span>{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- CERTIFICATIONS -->
+    {% if data.certifications %}
+    <section id="certifications" class="section">
+      <h2 class="section-title">Certifications</h2>
+      <ul class="cert-list">
+        {% for cert in data.certifications %}
+        <li>{{ cert }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <!-- ACHIEVEMENTS -->
+    {% if data.achievements %}
+    <section id="achievements" class="section">
+      <h2 class="section-title">Achievements</h2>
+      <ul class="cert-list">
+        {% for ach in data.achievements %}
+        <li>{{ ach }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>© {{ year }} {{ data.name }} · Built with PortfolioForge</p>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll + active nav
+  const links = document.querySelectorAll('.nav-link');
+  links.forEach(l => {
+    l.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(l.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+  const nav = document.getElementById('sticky-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 80);
+  });
+</script>
+</body>
+</html>

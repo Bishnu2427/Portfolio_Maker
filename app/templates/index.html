@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}PortfolioForge — Turn Your CV Into a Live Portfolio{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">Powered by Gemini AI</div>
+    <h1 class="hero-title">
+      Your CV → <span class="gradient-text">Live Portfolio</span><br>in Minutes
+    </h1>
+    <p class="hero-sub">
+      Upload your resume, pick a style, and watch AI transform it into a stunning
+      portfolio site — hosted free on GitHub Pages.
+    </p>
+    <div class="hero-actions">
+      <a href="/create" class="btn btn-primary btn-lg">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path d="M10 2a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H3a1 1 0 110-2h6V3a1 1 0 011-1z"/></svg>
+        Create My Portfolio
+      </a>
+      <a href="#how-it-works" class="btn btn-ghost btn-lg">See How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">4</span><span class="stat-lbl">Portfolio Styles</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">AI</span><span class="stat-lbl">Content Enhanced</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">Free</span><span class="stat-lbl">GitHub Hosting</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works" id="how-it-works">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>How It Works</h2>
+      <p>Three steps to your dream portfolio</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">📄</div>
+        <h3>Upload Your CV</h3>
+        <p>Upload a PDF, DOCX, or TXT resume. Add your professional photo and tell the AI how you want your portfolio to look.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">✨</div>
+        <h3>AI Builds It</h3>
+        <p>Gemini AI extracts, polishes, and structures your content, then generates a beautiful responsive portfolio site.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">🚀</div>
+        <h3>Preview & Deploy</h3>
+        <p>Preview live locally, refine with natural language prompts, then deploy to GitHub Pages with one click — totally free.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="styles-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Choose Your Style</h2>
+      <p>Four professionally designed templates for every taste</p>
+    </div>
+    <div class="styles-grid">
+      <div class="style-card" data-style="professional">
+        <div class="style-preview professional-prev">
+          <div class="prev-header"></div>
+          <div class="prev-body"><div class="prev-line w80"></div><div class="prev-line w60"></div><div class="prev-tags"><span></span><span></span><span></span></div></div>
+        </div>
+        <h3>Professional</h3>
+        <p>Corporate, clean, recruiter-ready</p>
+      </div>
+      <div class="style-card" data-style="modern">
+        <div class="style-preview modern-prev">
+          <div class="prev-header dark-header"></div>
+          <div class="prev-body dark-body"><div class="prev-line w80 light"></div><div class="prev-line w60 light"></div><div class="prev-tags"><span class="tag-blue"></span><span class="tag-green"></span><span></span></div></div>
+        </div>
+        <h3>Modern</h3>
+        <p>Dark theme, bold, tech-forward</p>
+      </div>
+      <div class="style-card" data-style="minimal">
+        <div class="style-preview minimal-prev">
+          <div class="prev-min-body"><div class="prev-line w40 bold"></div><div class="prev-line w80"></div><div class="prev-line w70"></div><div class="prev-dot"></div></div>
+        </div>
+        <h3>Minimal</h3>
+        <p>Clean, elegant, whitespace-focused</p>
+      </div>
+      <div class="style-card" data-style="creative">
+        <div class="style-preview creative-prev">
+          <div class="prev-gradient"></div>
+          <div class="prev-creative-body"><div class="prev-line w60 white"></div><div class="prev-line w80 white-thin"></div></div>
+        </div>
+        <h3>Creative</h3>
+        <p>Bold, colorful, unforgettable</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="section-inner">
+    <div class="cta-card">
+      <h2>Ready to stand out?</h2>
+      <p>Join professionals who turned their CV into a stunning online portfolio.</p>
+      <a href="/create" class="btn btn-primary btn-lg">Get Started — It's Free</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="brand">PortfolioForge</span>
+    <span class="footer-copy">Built with Flask &amp; Gemini AI · Free for everyone</span>
+  </div>
+</footer>
+{% endblock %}

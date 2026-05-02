@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{{ data.name }} — {{ data.title }}" />
+  <title>{{ data.name }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">Available for Opportunities</div>
+      <h1 class="hero-name">{{ data.name }}</h1>
+      <h2 class="hero-title">{{ data.title }}</h2>
+      <p class="hero-summary">{{ data.summary }}</p>
+      <div class="hero-links">
+        {% if data.linkedin %}<a href="{{ data.linkedin }}" target="_blank" class="hero-link">LinkedIn</a>{% endif %}
+        {% if data.github %}<a href="{{ data.github }}" target="_blank" class="hero-link">GitHub</a>{% endif %}
+        {% if data.website %}<a href="{{ data.website }}" target="_blank" class="hero-link">Website</a>{% endif %}
+        {% if data.email %}<a href="mailto:{{ data.email }}" class="hero-link hero-link-primary">Get in Touch</a>{% endif %}
+      </div>
+      <div class="hero-meta">
+        {% if data.location %}<span>📍 {{ data.location }}</span>{% endif %}
+        {% if data.phone %}<span>📱 {{ data.phone }}</span>{% endif %}
+      </div>
+    </div>
+    <div class="hero-photo">
+      {% if photo_base64 %}
+      <div class="photo-ring">
+        <img src="data:{{ photo_mime }};base64,{{ photo_base64 }}" alt="{{ data.name }}" />
+      </div>
+      {% else %}
+      <div class="photo-placeholder">{{ data.name[0] if data.name else 'P' }}</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- NAV -->
+<nav class="nav-bar" id="nav-bar">
+  <div class="nav-inner">
+    <span class="nav-brand">{{ data.name.split()[0] if data.name else 'Portfolio' }}</span>
+    <div class="nav-links">
+      {% if data.experience %}<a href="#experience" class="nav-a">Experience</a>{% endif %}
+      {% if data.skills %}<a href="#skills" class="nav-a">Skills</a>{% endif %}
+      {% if data.projects %}<a href="#projects" class="nav-a">Projects</a>{% endif %}
+      {% if data.education %}<a href="#education" class="nav-a">Education</a>{% endif %}
+      {% if data.email %}<a href="mailto:{{ data.email }}" class="nav-a nav-cta">Contact</a>{% endif %}
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="container">
+
+    <!-- EXPERIENCE -->
+    {% if data.experience %}
+    <section id="experience" class="section">
+      <div class="section-label">// experience</div>
+      <h2 class="section-h">Work History</h2>
+      <div class="exp-list">
+        {% for exp in data.experience %}
+        <div class="exp-card">
+          <div class="exp-left">
+            <div class="exp-dot"></div>
+          </div>
+          <div class="exp-right">
+            <div class="exp-meta">
+              <span class="exp-period">{{ exp.start_date }}{% if exp.end_date %} – {{ exp.end_date }}{% endif %}</span>
+            </div>
+            <h3 class="exp-role">{{ exp.title }}</h3>
+            <p class="exp-org">{{ exp.company }}{% if exp.location %} · {{ exp.location }}{% endif %}</p>
+            {% if exp.description %}
+            <ul class="exp-bullets">
+              {% for item in exp.description %}
+              <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- SKILLS -->
+    {% if data.skills or data.skill_categories %}
+    <section id="skills" class="section">
+      <div class="section-label">// skills</div>
+      <h2 class="section-h">Tech Stack</h2>
+      {% if data.skill_categories %}
+      <div class="skills-cats">
+        {% for cat, skills in data.skill_categories.items() %}
+        <div class="skill-cat-block">
+          <div class="cat-label">{{ cat }}</div>
+          <div class="tags">
+            {% for s in skills %}<span class="tag">{{ s }}</span>{% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="tags">
+        {% for s in data.skills %}<span class="tag">{{ s }}</span>{% endfor %}
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <!-- PROJECTS -->
+    {% if data.projects %}
+    <section id="projects" class="section">
+      <div class="section-label">// projects</div>
+      <h2 class="section-h">Featured Work</h2>
+      <div class="proj-grid">
+        {% for proj in data.projects %}
+        <div class="proj-card">
+          <div class="proj-glow"></div>
+          <div class="proj-top">
+            <span class="proj-icon">▶</span>
+            {% if proj.url %}<a href="{{ proj.url }}" target="_blank" class="proj-ext">↗</a>{% endif %}
+          </div>
+          <h3 class="proj-name">{{ proj.name }}</h3>
+          <p class="proj-desc">{{ proj.description }}</p>
+          {% if proj.technologies %}
+          <div class="tags mt-14">
+            {% for t in proj.technologies %}<span class="tag tag-sm tag-outline">{{ t }}</span>{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- EDUCATION -->
+    {% if data.education %}
+    <section id="education" class="section">
+      <div class="section-label">// education</div>
+      <h2 class="section-h">Academic Background</h2>
+      <div class="edu-cards">
+        {% for edu in data.education %}
+        <div class="edu-card">
+          <div class="edu-icon">🎓</div>
+          <div class="edu-info">
+            <h3 class="edu-deg">{{ edu.degree }}{% if edu.field %} in {{ edu.field }}{% endif %}</h3>
+            <p class="edu-inst">{{ edu.institution }}</p>
+            <span class="edu-period">{{ edu.start_date }}{% if edu.end_date %} – {{ edu.end_date }}{% endif %}{% if edu.gpa %} · GPA {{ edu.gpa }}{% endif %}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- CERTS -->
+    {% if data.certifications %}
+    <section class="section">
+      <div class="section-label">// certifications</div>
+      <h2 class="section-h">Certifications</h2>
+      <div class="cert-chips">
+        {% for c in data.certifications %}<span class="cert-chip">🏆 {{ c }}</span>{% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>{{ data.name }} · {{ year }} · Built with PortfolioForge</p>
+    {% if data.email %}<a href="mailto:{{ data.email }}">{{ data.email }}</a>{% endif %}
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav-bar').classList.toggle('scrolled', window.scrollY > 300);
+  });
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>

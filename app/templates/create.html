@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block title %}Create Portfolio — PortfolioForge{% endblock %}
+
+{% block content %}
+<div class="create-page">
+  <div class="create-header">
+    <h1>Create Your Portfolio</h1>
+    <p>Fill in the form below and let AI do the rest</p>
+  </div>
+
+  <div class="create-layout">
+    <!-- Stepper -->
+    <div class="stepper">
+      <div class="step-item active" id="stp-1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Upload Files</div>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" id="stp-2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Choose Style</div>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" id="stp-3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Preferences</div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form id="portfolio-form" enctype="multipart/form-data">
+
+      <!-- STEP 1: Upload -->
+      <div class="form-step active" id="step-1">
+        <h2 class="step-title">Upload Your Documents</h2>
+
+        <div class="upload-area" id="cv-drop-zone">
+          <input type="file" id="cv-input" name="cv" accept=".pdf,.docx,.doc,.txt" hidden />
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">
+            <strong>Drop your CV here</strong> or <span class="upload-link" onclick="document.getElementById('cv-input').click()">browse</span>
+          </div>
+          <div class="upload-hint">PDF, DOCX, DOC, TXT — max 16 MB</div>
+          <div class="upload-selected" id="cv-name" style="display:none"></div>
+        </div>
+
+        <div class="upload-area photo-area" id="photo-drop-zone">
+          <input type="file" id="photo-input" name="photo" accept=".png,.jpg,.jpeg,.webp" hidden />
+          <div class="photo-preview-wrap" id="photo-preview-wrap" style="display:none">
+            <img id="photo-preview" src="" alt="Profile Photo" />
+          </div>
+          <div id="photo-upload-content">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">
+              <strong>Professional Photo</strong> (optional) <span class="upload-link" onclick="document.getElementById('photo-input').click()">browse</span>
+            </div>
+            <div class="upload-hint">PNG, JPG, WEBP — square crop recommended</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-next" onclick="goStep(2)">
+          Continue <span>→</span>
+        </button>
+      </div>
+
+      <!-- STEP 2: Style -->
+      <div class="form-step" id="step-2">
+        <h2 class="step-title">Choose a Portfolio Style</h2>
+
+        <div class="style-selector" id="style-selector">
+          <label class="style-opt" data-val="professional">
+            <input type="radio" name="style" value="professional" checked hidden />
+            <div class="style-thumb professional-thumb">
+              <div class="th-header"></div>
+              <div class="th-body"><div class="th-bar w70"></div><div class="th-bar w50"></div><div class="th-tags"><i></i><i></i><i></i></div></div>
+            </div>
+            <div class="style-info">
+              <strong>Professional</strong>
+              <span>Clean, corporate, recruiter-ready</span>
+            </div>
+            <div class="style-check">✓</div>
+          </label>
+
+          <label class="style-opt" data-val="modern">
+            <input type="radio" name="style" value="modern" hidden />
+            <div class="style-thumb modern-thumb">
+              <div class="th-header dark"></div>
+              <div class="th-body dark"><div class="th-bar w70 light"></div><div class="th-bar w50 light"></div><div class="th-tags"><i class="blue"></i><i class="green"></i><i class="purple"></i></div></div>
+            </div>
+            <div class="style-info">
+              <strong>Modern</strong>
+              <span>Dark, bold, tech-forward</span>
+            </div>
+            <div class="style-check">✓</div>
+          </label>
+
+          <label class="style-opt" data-val="minimal">
+            <input type="radio" name="style" value="minimal" hidden />
+            <div class="style-thumb minimal-thumb">
+              <div class="th-min"><div class="th-bar w40 bold-bar"></div><div class="th-bar w80"></div><div class="th-bar w60"></div><div class="th-dot"></div></div>
+            </div>
+            <div class="style-info">
+              <strong>Minimal</strong>
+              <span>Clean, elegant, typography-first</span>
+            </div>
+            <div class="style-check">✓</div>
+          </label>
+
+          <label class="style-opt" data-val="creative">
+            <input type="radio" name="style" value="creative" hidden />
+            <div class="style-thumb creative-thumb">
+              <div class="th-gradient"></div>
+              <div class="th-creative"><div class="th-bar w60 white-bar"></div><div class="th-bar w80 white-thin-bar"></div></div>
+            </div>
+            <div class="style-info">
+              <strong>Creative</strong>
+              <span>Bold, colorful, unforgettable</span>
+            </div>
+            <div class="style-check">✓</div>
+          </label>
+        </div>
+
+        <div class="step-nav">
+          <button type="button" class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+          <button type="button" class="btn btn-primary btn-next" onclick="goStep(3)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Preferences -->
+      <div class="form-step" id="step-3">
+        <h2 class="step-title">Your Preferences <span class="optional-tag">Optional</span></h2>
+
+        <div class="field-group">
+          <label class="field-label">Portfolio Tone</label>
+          <div class="tone-grid">
+            <label class="tone-opt selected" data-val="professional">
+              <input type="radio" name="tone" value="professional" checked hidden />
+              <span class="tone-icon">💼</span>
+              <span>Professional</span>
+            </label>
+            <label class="tone-opt" data-val="friendly">
+              <input type="radio" name="tone" value="friendly" hidden />
+              <span class="tone-icon">😊</span>
+              <span>Friendly</span>
+            </label>
+            <label class="tone-opt" data-val="bold">
+              <input type="radio" name="tone" value="bold" hidden />
+              <span class="tone-icon">⚡</span>
+              <span>Bold</span>
+            </label>
+            <label class="tone-opt" data-val="minimal">
+              <input type="radio" name="tone" value="minimal" hidden />
+              <span class="tone-icon">🌿</span>
+              <span>Minimal</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="prompt-input">
+            Custom Instructions
+            <span class="field-hint">Tell the AI anything specific about your portfolio</span>
+          </label>
+          <textarea
+            id="prompt-input"
+            name="prompt"
+            class="textarea-field"
+            rows="5"
+            placeholder="E.g. Focus on my machine learning projects, use a blue color scheme, highlight my leadership roles, make it suitable for applying to FAANG companies..."
+          ></textarea>
+          <div class="prompt-examples">
+            <span class="examples-label">Examples:</span>
+            <button type="button" class="example-chip" onclick="addExample('Highlight my open source contributions and technical skills')">highlight open source</button>
+            <button type="button" class="example-chip" onclick="addExample('Use a blue and white color scheme, suitable for finance industry')">finance industry</button>
+            <button type="button" class="example-chip" onclick="addExample('Emphasize leadership and management experience for senior roles')">leadership focus</button>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button type="button" class="btn btn-ghost" onclick="goStep(2)">← Back</button>
+          <button type="button" id="generate-btn" class="btn btn-primary btn-lg" onclick="submitForm()">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            Generate My Portfolio
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Processing Overlay -->
+<div id="processing-overlay" style="display:none">
+  <div class="processing-card">
+    <div class="processing-logo">
+      <svg viewBox="0 0 32 32" fill="none" width="48" height="48">
+        <rect width="32" height="32" rx="8" fill="url(#gp)"/>
+        <path d="M8 22L14 10L20 18L24 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="gp" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+      </svg>
+    </div>
+    <h2 id="processing-title">Processing your portfolio…</h2>
+    <p id="processing-msg">Parsing your CV</p>
+
+    <div class="progress-track">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+    <div class="progress-pct" id="progress-pct">0%</div>
+
+    <div class="processing-steps" id="processing-steps">
+      <div class="ps-item" id="ps-1">📄 Parsing CV</div>
+      <div class="ps-item" id="ps-2">🤖 Analyzing content</div>
+      <div class="ps-item" id="ps-3">✨ Polishing brief</div>
+      <div class="ps-item" id="ps-4">📝 Enhancing with AI</div>
+      <div class="ps-item" id="ps-5">🏗️ Building site</div>
+      <div class="ps-item" id="ps-6">🖥️ Starting preview</div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/create.js') }}"></script>
+{% endblock %}

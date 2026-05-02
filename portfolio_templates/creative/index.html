@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ data.name }} — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+
+<!-- CURSOR GLOW (decorative) -->
+<div class="cursor-glow" id="cursor-glow"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <nav class="hero-nav">
+    <div class="nav-brand">{{ data.name.split()[0] if data.name else 'Portfolio' }}</div>
+    <div class="nav-links">
+      {% if data.experience %}<a href="#experience">Work</a>{% endif %}
+      {% if data.projects %}<a href="#projects">Projects</a>{% endif %}
+      {% if data.skills %}<a href="#skills">Skills</a>{% endif %}
+      {% if data.email %}<a href="mailto:{{ data.email }}" class="nav-cta">Contact</a>{% endif %}
+    </div>
+  </nav>
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-tagline">✦ Designer &amp; Developer</div>
+      <h1 class="hero-name">
+        <span class="name-line">{{ data.name.split()[0] if data.name else 'First' }}</span>
+        {% if data.name and data.name.split()|length > 1 %}
+        <span class="name-line outline">{{ data.name.split()[-1] }}</span>
+        {% endif %}
+      </h1>
+      <p class="hero-role">{{ data.title }}</p>
+      <p class="hero-desc">{{ data.summary }}</p>
+      <div class="hero-btns">
+        {% if data.email %}<a href="mailto:{{ data.email }}" class="btn-main">Let's Talk ↗</a>{% endif %}
+        {% if data.github %}<a href="{{ data.github }}" target="_blank" class="btn-sec">GitHub</a>{% endif %}
+        {% if data.linkedin %}<a href="{{ data.linkedin }}" target="_blank" class="btn-sec">LinkedIn</a>{% endif %}
+      </div>
+      <div class="hero-meta">
+        {% if data.location %}<span>📍 {{ data.location }}</span>{% endif %}
+        {% if data.phone %}<span>📱 {{ data.phone }}</span>{% endif %}
+      </div>
+    </div>
+    {% if photo_base64 %}
+    <div class="hero-img-wrap">
+      <div class="img-frame">
+        <img src="data:{{ photo_mime }};base64,{{ photo_base64 }}" alt="{{ data.name }}" class="hero-img" />
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- SKILLS -->
+{% if data.skills or data.skill_categories %}
+<section id="skills" class="section section-dark">
+  <div class="container">
+    <div class="sec-label">My Toolkit</div>
+    <h2 class="sec-h white">Skills & Technologies</h2>
+    {% if data.skill_categories %}
+    <div class="skill-cats">
+      {% for cat, skills in data.skill_categories.items() %}
+      <div class="skill-cat-card">
+        <h4 class="cat-title">{{ cat }}</h4>
+        <div class="pill-row">
+          {% for s in skills %}<span class="pill">{{ s }}</span>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="pill-row big">
+      {% for s in data.skills %}<span class="pill">{{ s }}</span>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+<!-- EXPERIENCE -->
+{% if data.experience %}
+<section id="experience" class="section section-light">
+  <div class="container">
+    <div class="sec-label dark">Career Path</div>
+    <h2 class="sec-h">Work Experience</h2>
+    <div class="work-cards">
+      {% for exp in data.experience %}
+      <div class="work-card">
+        <div class="wc-accent"></div>
+        <div class="wc-body">
+          <div class="wc-top">
+            <div>
+              <h3 class="wc-role">{{ exp.title }}</h3>
+              <p class="wc-company">@ {{ exp.company }}{% if exp.location %}, {{ exp.location }}{% endif %}</p>
+            </div>
+            <span class="wc-period">{{ exp.start_date }}{% if exp.end_date %} – {{ exp.end_date }}{% endif %}</span>
+          </div>
+          {% if exp.description %}
+          <ul class="wc-list">
+            {% for item in exp.description %}<li>{{ item }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- PROJECTS -->
+{% if data.projects %}
+<section id="projects" class="section section-gradient">
+  <div class="container">
+    <div class="sec-label">Selected Work</div>
+    <h2 class="sec-h white">Featured Projects</h2>
+    <div class="proj-grid">
+      {% for proj in data.projects %}
+      <div class="proj-card">
+        <div class="proj-num">{{ '%02d' % loop.index }}</div>
+        <h3 class="proj-name">{{ proj.name }}</h3>
+        <p class="proj-desc">{{ proj.description }}</p>
+        {% if proj.technologies %}
+        <div class="proj-techs">
+          {% for t in proj.technologies %}<span class="tech-tag">{{ t }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        {% if proj.url %}
+        <a href="{{ proj.url }}" target="_blank" class="proj-link">View Project →</a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- EDUCATION + CERTS -->
+{% if data.education or data.certifications %}
+<section class="section section-light">
+  <div class="container">
+    <div class="two-col">
+      {% if data.education %}
+      <div>
+        <div class="sec-label dark">Background</div>
+        <h2 class="sec-h">Education</h2>
+        {% for edu in data.education %}
+        <div class="edu-card">
+          <div class="edu-accent">🎓</div>
+          <div>
+            <h3 class="edu-deg">{{ edu.degree }}{% if edu.field %} in {{ edu.field }}{% endif %}</h3>
+            <p class="edu-inst">{{ edu.institution }}</p>
+            <p class="edu-period">{{ edu.start_date }}{% if edu.end_date %} – {{ edu.end_date }}{% endif %}{% if edu.gpa %} · {{ edu.gpa }} GPA{% endif %}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if data.certifications %}
+      <div>
+        <div class="sec-label dark">Credentials</div>
+        <h2 class="sec-h">Certifications</h2>
+        {% for cert in data.certifications %}
+        <div class="cert-item">
+          <span class="cert-icon">🏆</span>
+          <span>{{ cert }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CONTACT -->
+<section class="contact-section">
+  <div class="container">
+    <div class="contact-inner">
+      <h2 class="contact-h">Let's Build Something<br><span>Remarkable</span> Together</h2>
+      {% if data.email %}
+      <a href="mailto:{{ data.email }}" class="contact-btn">Send a Message ↗</a>
+      {% endif %}
+      <div class="contact-links">
+        {% if data.linkedin %}<a href="{{ data.linkedin }}" target="_blank">LinkedIn</a>{% endif %}
+        {% if data.github %}<a href="{{ data.github }}" target="_blank">GitHub</a>{% endif %}
+        {% if data.website %}<a href="{{ data.website }}" target="_blank">Website</a>{% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© {{ year }} {{ data.name }} · Made with PortfolioForge</p>
+</footer>
+
+<script>
+  // Cursor glow
+  const glow = document.getElementById('cursor-glow');
+  document.addEventListener('mousemove', e => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+  });
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(el => { if (el.isIntersecting) el.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.work-card, .proj-card, .skill-cat-card, .edu-card').forEach(el => {
+    el.classList.add('reveal');
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

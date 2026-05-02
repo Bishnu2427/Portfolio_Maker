@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}PortfolioForge{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="brand">
+        <svg class="brand-icon" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#g1)"/>
+          <path d="M8 22L14 10L20 18L24 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#7c3aed"/>
+              <stop offset="1" stop-color="#06b6d4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        PortfolioForge
+      </a>
+      <div class="nav-right">
+        <a href="/create" class="btn btn-primary">+ Create Portfolio</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>{% block content %}{% endblock %}</main>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
