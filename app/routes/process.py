@@ -3,6 +3,7 @@ import uuid
 import json
 from flask import Blueprint, request, jsonify, session, Response, stream_with_context
 from app.services.cv_parser import CVParser
+from app.services.cv_fallback import extract as fallback_extract
 from app.services.ai_service import AIService
 from app.services.portfolio_generator import PortfolioGenerator
 from app.services.port_manager import PortManager
@@ -67,33 +68,72 @@ def generate(portfolio_id):
                 yield _event({'error': 'Portfolio not found'})
                 return
 
-            # Step 1 – parse CV
+            # ── Step 1: Parse CV text ────────────────────────────────────
             yield _event({'step': 1, 'message': 'Parsing your CV...', 'progress': 10})
             cv_text = CVParser.parse(portfolio.get('cv_path', ''))
             if not cv_text:
-                yield _event({'error': 'Could not read CV. Please re-upload a valid PDF, DOCX, or TXT file.'})
+                yield _event({'error': 'Could not read CV. Please re-upload a valid PDF, DOCX, or TXT.'})
                 return
             Portfolio.update(portfolio_id, {'cv_text': cv_text, 'status': 'processing'})
 
-            # Step 2 – AI parse structured data
-            yield _event({'step': 2, 'message': 'Extracting key information with AI...', 'progress': 25})
-            ai = AIService()
-            cv_data = ai.parse_cv(cv_text)
+            # ── Step 2: Extract structured data (AI, fallback to regex) ──
+            yield _event({'step': 2, 'message': 'Extracting CV data with AI...', 'progress': 25})
+            ai_available = bool(Config.GEMINI_API_KEY)
+            cv_data = {}
+            ai = None
+
+            if ai_available:
+                try:
+                    ai = AIService()
+                    cv_data = ai.parse_cv(cv_text)
+                    print(f'[Process] AI parsed CV for {portfolio_id[:8]}: name={cv_data.get("name")}')
+                except Exception as e:
+                    print(f'[Process] AI parse_cv failed: {e}')
+                    yield _event({'step': 2, 'message': f'⚠️ AI unavailable ({e}). Using smart extraction...', 'progress': 25})
+                    ai_available = False
+
+            if not ai_available or not cv_data.get('name'):
+                cv_data = fallback_extract(cv_text)
+                print(f'[Process] Fallback extracted: name={cv_data.get("name")}')
+                yield _event({'step': 2, 'message': 'Extracted CV data ✓', 'progress': 28})
+
             Portfolio.update(portfolio_id, {'cv_data': cv_data})
 
-            # Step 3 – polish user prompt
-            yield _event({'step': 3, 'message': 'Polishing your portfolio brief...', 'progress': 40})
-            polished = ai.polish_prompt(
-                portfolio.get('user_prompt', ''),
-                portfolio.get('style', 'professional'),
-                cv_data,
+            # ── Step 3: Polish prompt ────────────────────────────────────
+            yield _event({'step': 3, 'message': 'Preparing portfolio brief...', 'progress': 40})
+            polished = portfolio.get('user_prompt', '') or (
+                f"Create a {portfolio.get('style', 'professional')} portfolio for "
+                f"{cv_data.get('name', 'this professional')}, "
+                f"a {cv_data.get('title', 'professional')}."
             )
+            if ai and ai_available:
+                try:
+                    polished = ai.polish_prompt(
+                        portfolio.get('user_prompt', ''),
+                        portfolio.get('style', 'professional'),
+                        cv_data,
+                    )
+                except Exception as e:
+                    print(f'[Process] AI polish_prompt failed: {e}')
 
-            # Step 4 – enhance content
+            # ── Step 4: Enhance content ──────────────────────────────────
             yield _event({'step': 4, 'message': 'Enhancing content with AI...', 'progress': 55})
-            enhanced = ai.enhance_content(cv_data, polished, portfolio.get('style', 'professional'))
+            enhanced = cv_data
+            if ai and ai_available:
+                try:
+                    enhanced = ai.enhance_content(cv_data, polished, portfolio.get('style', 'professional'))
+                    print(f'[Process] AI enhanced content: name={enhanced.get("name")}')
+                except Exception as e:
+                    print(f'[Process] AI enhance_content failed: {e}')
+                    yield _event({'step': 4, 'message': '⚠️ AI enhancement skipped. Using extracted data.', 'progress': 55})
 
-            # Step 5 – generate files
+            # Guarantee name/title are never empty
+            if not enhanced.get('name'):
+                enhanced['name'] = cv_data.get('name') or 'Your Name'
+            if not enhanced.get('title'):
+                enhanced['title'] = cv_data.get('title') or 'Professional'
+
+            # ── Step 5: Generate portfolio files ────────────────────────
             yield _event({'step': 5, 'message': 'Building your portfolio site...', 'progress': 70})
             generator = PortfolioGenerator()
             portfolio_dir = generator.generate(
@@ -108,7 +148,7 @@ def generate(portfolio_id):
                 'status': 'generated',
             })
 
-            # Step 6 – start preview server
+            # ── Step 6: Start preview server ────────────────────────────
             yield _event({'step': 6, 'message': 'Starting preview server...', 'progress': 85})
             pm = PortManager()
             port = pm.allocate_port(portfolio_id)
@@ -116,16 +156,16 @@ def generate(portfolio_id):
             pid = prev.start(portfolio_dir, port, portfolio_id)
             Portfolio.update(portfolio_id, {'port': port, 'pid': pid, 'status': 'preview'})
 
-            # Wait until the server is actually accepting connections (up to 20 s)
-            yield _event({'step': 6, 'message': 'Waiting for preview server to be ready...', 'progress': 92})
+            yield _event({'step': 6, 'message': 'Waiting for preview server...', 'progress': 92})
             if not prev.wait_ready(port):
                 logs = prev.get_log(portfolio_id)
-                yield _event({'error': f'Preview server did not start on port {port}.\n\nLogs:\n{logs}'})
+                yield _event({'error': f'Preview server failed to start on port {port}.\n\nLogs:\n{logs}'})
                 return
 
+            # ── Done ─────────────────────────────────────────────────────
             yield _event({
                 'step': 7,
-                'message': 'Your portfolio is ready!',
+                'message': f'Portfolio ready for {enhanced.get("name", "you")}!',
                 'progress': 100,
                 'port': port,
                 'portfolio_id': portfolio_id,
@@ -134,6 +174,8 @@ def generate(portfolio_id):
             })
 
         except Exception as exc:
+            import traceback
+            print(f'[Process] Unhandled error: {traceback.format_exc()}')
             yield _event({'error': str(exc)})
 
     return Response(
@@ -159,10 +201,19 @@ def modify():
     generator = PortfolioGenerator()
     current_html = generator.get_html(portfolio.get('portfolio_dir', ''))
 
-    ai = AIService()
-    modified_html = ai.modify_portfolio(current_html, prompt)
+    try:
+        ai = AIService()
+        modified_html = ai.modify_portfolio(current_html, prompt)
+        generator.update_html(portfolio.get('portfolio_dir', ''), modified_html)
+        Portfolio.update(portfolio_id, {'status': 'preview'})
+        return jsonify({'success': True, 'message': 'Portfolio updated'})
+    except Exception as e:
+        return jsonify({'error': f'AI modification failed: {e}'}), 500
 
-    generator.update_html(portfolio.get('portfolio_dir', ''), modified_html)
-    Portfolio.update(portfolio_id, {'status': 'preview'})
 
-    return jsonify({'success': True, 'message': 'Portfolio updated successfully'})
+@process_bp.route('/logs/<portfolio_id>', methods=['GET'])
+def get_logs(portfolio_id):
+    """Debug endpoint — returns the preview server log."""
+    prev = PreviewManager()
+    logs = prev.get_log(portfolio_id)
+    return jsonify({'logs': logs or 'No logs available'})

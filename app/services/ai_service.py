@@ -8,6 +8,11 @@ class AIService:
     MODEL = 'gemini-2.0-flash'
 
     def __init__(self):
+        if not Config.GEMINI_API_KEY:
+            raise ValueError(
+                'GEMINI_API_KEY is missing. Add it to your .env file:\n'
+                'GEMINI_API_KEY=your-key-from-aistudio.google.com'
+            )
         self.client = genai.Client(api_key=Config.GEMINI_API_KEY)
 
     # ------------------------------------------------------------------
@@ -86,7 +91,7 @@ Style: {style}
 Person: {name} — {title}
 
 Return only the enhanced brief, no preamble."""
-        return self._call(prompt).strip()
+        return self._call(prompt).strip() or user_prompt
 
     # ------------------------------------------------------------------
     def enhance_content(self, cv_data: dict, polished_prompt: str, style: str) -> dict:
@@ -109,7 +114,7 @@ Instructions:
 Return ONLY the complete enhanced JSON with the same structure. No markdown fences."""
         text = self._call(prompt)
         enhanced = self._parse_json(text, cv_data)
-        # Merge: preserve original fields if AI dropped them
+        # Preserve original fields that AI may have dropped or emptied
         for k, v in cv_data.items():
             if k not in enhanced or not enhanced[k]:
                 enhanced[k] = v
@@ -129,22 +134,17 @@ Current HTML:
 
 Return the complete modified HTML document only. No markdown, no explanation."""
         result = self._call(prompt).strip()
-        # Strip markdown fences if model wraps response
         result = re.sub(r'^```(?:html)?\s*', '', result, flags=re.IGNORECASE)
         result = re.sub(r'\s*```$', '', result)
-        return result
+        return result if result else current_html
 
     # ------------------------------------------------------------------
     def _call(self, prompt: str) -> str:
-        try:
-            response = self.client.models.generate_content(
-                model=self.MODEL,
-                contents=prompt,
-            )
-            return response.text.strip()
-        except Exception as e:
-            print(f'[AIService] Gemini error: {e}')
-            return ''
+        response = self.client.models.generate_content(
+            model=self.MODEL,
+            contents=prompt,
+        )
+        return response.text.strip()
 
     def _parse_json(self, text: str, fallback: dict) -> dict:
         text = text.strip()
@@ -158,15 +158,15 @@ Return the complete modified HTML document only. No markdown, no explanation."""
     @staticmethod
     def _default_cv() -> dict:
         return {
-            'name': 'Your Name',
-            'title': 'Professional Title',
+            'name': '',
+            'title': '',
             'email': '',
             'phone': '',
             'location': '',
             'linkedin': '',
             'github': '',
             'website': '',
-            'summary': 'Experienced professional dedicated to delivering excellence.',
+            'summary': '',
             'skills': [],
             'skill_categories': {},
             'experience': [],
