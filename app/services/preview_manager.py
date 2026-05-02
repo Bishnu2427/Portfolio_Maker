@@ -20,8 +20,10 @@ class PreviewManager:
             env=env,
         )
         self.__class__._procs[portfolio_id] = proc
+        # Register now that PID is known — single source of truth in MongoDB
         PortRegistry.register(portfolio_id, port, proc.pid)
         print(f'[PreviewManager] Started portfolio {portfolio_id[:8]} on port {port} (PID {proc.pid})')
+        PortRegistry.print_log()
         return proc.pid
 
     def stop(self, portfolio_id: str):

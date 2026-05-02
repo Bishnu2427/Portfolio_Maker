@@ -1,13 +1,14 @@
 import json
 import re
-import google.generativeai as genai
+from google import genai
 from app.config import Config
 
 
 class AIService:
+    MODEL = 'gemini-2.0-flash'
+
     def __init__(self):
-        genai.configure(api_key=Config.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.client = genai.Client(api_key=Config.GEMINI_API_KEY)
 
     # ------------------------------------------------------------------
     def parse_cv(self, cv_text: str) -> dict:
@@ -136,7 +137,10 @@ Return the complete modified HTML document only. No markdown, no explanation."""
     # ------------------------------------------------------------------
     def _call(self, prompt: str) -> str:
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.MODEL,
+                contents=prompt,
+            )
             return response.text.strip()
         except Exception as e:
             print(f'[AIService] Gemini error: {e}')

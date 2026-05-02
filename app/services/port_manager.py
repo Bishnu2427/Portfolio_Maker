@@ -21,9 +21,8 @@ class PortManager:
             port += 1
             if port > self.end:
                 raise RuntimeError('No free ports available.')
-        PortRegistry.register(portfolio_id, port)
-        print(f'[PortManager] Allocated port {port} → portfolio {portfolio_id[:8]}')
-        PortRegistry.print_log()
+        # Registration (with PID) is done by PreviewManager after the process starts
+        print(f'[PortManager] Reserved port {port} for portfolio {portfolio_id[:8]}')
         return port
 
     def release_port(self, portfolio_id: str):
