@@ -4,6 +4,7 @@ import json
 from flask import Blueprint, request, jsonify, session, Response, stream_with_context
 from app.services.cv_parser import CVParser
 from app.services.cv_analyzer import CVAnalyzer
+from app.services.cv_verifier import CVVerifier
 from app.services.ai_service import AIService
 from app.services.portfolio_generator import PortfolioGenerator
 from app.models.portfolio import Portfolio
@@ -89,7 +90,13 @@ def generate(portfolio_id):
             print(f'[Process] Extracted: name={cv_data.get("name")} '
                   f'exp={len(cv_data.get("experience", []))} '
                   f'edu={len(cv_data.get("education", []))}')
-            yield _event({'step': 2, 'message': 'CV analysed ✓', 'progress': 35})
+            yield _event({'step': 2, 'message': 'CV analysed ✓', 'progress': 30})
+
+            # ── Step 2b: Verify & clean extracted data ───────────────
+            yield _event({'step': 2, 'message': 'Verifying extracted data…', 'progress': 35})
+            cv_data = CVVerifier(portfolio_id).verify(cv_data, cv_text, ai=ai)
+            print(f'[Process] Verified: name={cv_data.get("name")} '
+                  f'skills={len(cv_data.get("skills", []))}')
             Portfolio.update(portfolio_id, {'cv_data': cv_data})
 
             # ── Step 3: Polish prompt ────────────────────────────────

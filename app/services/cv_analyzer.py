@@ -61,22 +61,89 @@ _DATE_RE = re.compile(
 _DECOR_RE = re.compile(r'[_\-=*#|●•▪►◆■◇~]{2,}')
 
 
+# ── CID ligature table ──────────────────────────────────────────────────────────
+# PDF fonts that use OpenType ligatures encode them as (cid:NNN) when the font's
+# ToUnicode map is missing.  These mappings are confirmed from the user's PDF:
+#   cid:415 = "ti"  (expertise, tion, tive, tic, …)
+#   cid:332 = "ft"  (Microsoft → Microso_ft_)
+#   cid:414 = "tf"  (platform → pla_tf_orm)
+#   cid:425 = "tt"  (Flutter  → Flu_tt_er)
+# Additional common OpenType ligature CIDs included for robustness.
+_CID_MAP: dict[int, str] = {
+    # Confirmed from user screenshots
+    415: 'ti',
+    332: 'ft',
+    414: 'tf',
+    425: 'tt',
+    # Common OpenType / Adobe standard ligatures
+    322: 'ff',
+    323: 'fi',
+    324: 'fl',
+    325: 'ffi',
+    326: 'ffl',
+    327: 'st',
+    328: 'ct',
+    413: 'fi',
+    416: 'tl',
+    417: 'ft',
+    418: 'ffi',
+    419: 'ffl',
+    420: 'ij',
+    421: 'fj',
+    426: 'th',
+    427: 'ffi',
+    428: 'ffl',
+    364: 'fi',
+    366: 'fl',
+    381: 'ffi',
+    382: 'ffl',
+}
+
+_CID_RE = re.compile(r'[(]cid:([0-9]+)[)]')
+
+
+def _decode_cid(m: re.Match) -> str:
+    cid = int(m.group(1))
+    return _CID_MAP.get(cid, '')   # unknown CID → remove (AI can recover from context)
+
+
+def clean_cid_artifacts(text: str) -> str:
+    """Replace (cid:NNN) PDF ligature placeholders with their real characters."""
+    return _CID_RE.sub(_decode_cid, text)
+
+
 # ── Text cleaning ───────────────────────────────────────────────────────────────
 
 def _clean_text(text: str) -> str:
     """Fix common PDF extraction artefacts and normalise whitespace."""
-    # Θ ligature placeholder (some PDF fonts encode 'ti' as Θ)
+    # CID ligature artifacts  — must be first so later steps see clean text
+    text = clean_cid_artifacts(text)
+
+    # Θ placeholder (some fonts encode 'ti' as Θ)
     text = re.sub(r'([A-Za-z])\s?Θ\s?([A-Za-z])', r'\1ti\2', text)
     text = text.replace('Θ', 'ti')
 
-    # Unicode ligatures → ASCII
-    for uc, asc in {
-        'ﬁ': 'fi', 'ﬂ': 'fl', 'ﬃ': 'ffi', 'ﬄ': 'ffl',
-        'ﬀ': 'ff', 'ﬅ': 'st', 'ﬆ': 'st',
-        '‘': "'", '’': "'", '“': '"', '”': '"',
-        '–': '-', '—': '-', '·': '.',
-    }.items():
-        text = text.replace(uc, asc)
+    # Unicode ligatures / special chars -> plain ASCII
+    # All non-ASCII chars written as \uXXXX escapes so the IDE parser
+    # never sees a curly-quote character adjacent to a regular apostrophe.
+    text = text.replace('ﬁ', 'fi')   # fi ligature
+    text = text.replace('ﬂ', 'fl')   # fl ligature
+    text = text.replace('ﬃ', 'ffi')  # ffi ligature
+    text = text.replace('ﬄ', 'ffl')  # ffl ligature
+    text = text.replace('ﬀ', 'ff')   # ff ligature
+    text = text.replace('ﬅ', 'st')   # st ligature
+    text = text.replace('ﬆ', 'st')   # st ligature
+    text = text.replace('­', '')     # soft hyphen
+    text = text.replace('​', '')     # zero-width space
+    text = text.replace('‌', '')     # zero-width non-joiner
+    text = text.replace('‍', '')     # zero-width joiner
+    text = text.replace('‘', "'")   # left single quotation mark
+    text = text.replace('’', "'")   # right single quotation mark
+    text = text.replace('“', '"')   # left double quotation mark
+    text = text.replace('”', '"')   # right double quotation mark
+    text = text.replace('–', '-')    # en-dash
+    text = text.replace('—', '-')    # em-dash
+    text = text.replace('·', '.')    # middle dot
 
     # Collapse multiple spaces (preserve newlines)
     text = re.sub(r'[^\S\n]+', ' ', text)
