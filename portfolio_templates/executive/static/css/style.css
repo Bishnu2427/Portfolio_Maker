@@ -1,0 +1,130 @@
+/* ============================================================
+   Executive Template — premium serif, C-suite ready
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #fafaf8;
+  --surface:  #f4f4f0;
+  --border:   #e5e4dc;
+  --gold:     #a07840;
+  --gold-lt:  #c9a864;
+  --text:     #1a1a2e;
+  --text2:    #4a4a5a;
+  --text3:    #8a8a9a;
+  --serif:    'Cormorant Garamond', Georgia, serif;
+  --sans:     'Inter', sans-serif;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--sans);
+  line-height: 1.7; font-size: 15px; }
+a { color: var(--gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── WRAPPER ── */
+.wrapper { max-width: 860px; margin: 0 auto; padding: 0 32px 80px; }
+
+/* ── NAV ── */
+.top-bar { border-bottom: 1px solid var(--border); margin-bottom: 0; }
+.top-bar-inner { max-width: 860px; margin: 0 auto; padding: 16px 32px;
+  display: flex; align-items: center; justify-content: space-between; }
+.brand { font-family: var(--serif); font-size: 1rem; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text3); }
+.top-nav { display: flex; gap: 28px; list-style: none; }
+.top-nav a { font-size: .78rem; color: var(--text3); letter-spacing: .08em;
+  text-transform: uppercase; transition: color .2s; }
+.top-nav a:hover { color: var(--gold); text-decoration: none; }
+
+/* ── MASTHEAD ── */
+.masthead { padding: 64px 0 40px; display: flex; gap: 40px; align-items: center;
+  border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+.masthead-photo { width: 110px; height: 110px; border-radius: 50%; object-fit: cover;
+  flex-shrink: 0; border: 3px solid var(--border); }
+.masthead-avatar { width: 110px; height: 110px; border-radius: 50%; background: var(--surface);
+  border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 2.8rem; color: var(--gold); flex-shrink: 0; }
+.masthead-text {}
+.masthead-name { font-family: var(--serif); font-size: 3.2rem; font-weight: 300;
+  letter-spacing: .02em; line-height: 1.1; margin-bottom: 8px; }
+.masthead-title { font-size: .88rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 16px; }
+.masthead-contacts { display: flex; flex-wrap: wrap; gap: 16px; }
+.mc-item { font-size: .82rem; color: var(--text3); display: flex; align-items: center; gap: 5px; }
+.mc-item a { color: var(--text3); }
+.mc-item a:hover { color: var(--gold); text-decoration: none; }
+.mc-sep { color: var(--border); }
+
+/* ── BODY LAYOUT ── */
+.body-grid { display: grid; grid-template-columns: 1fr 240px; gap: 56px; }
+.main-col {}
+.side-col {}
+
+/* ── SECTION ── */
+.section { margin-bottom: 48px; }
+.sec-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 600;
+  letter-spacing: .01em; color: var(--text); margin-bottom: 6px; }
+.sec-rule { height: 1px; background: linear-gradient(90deg, var(--gold), transparent);
+  margin-bottom: 24px; }
+
+/* ── SUMMARY ── */
+.summary-text { font-family: var(--serif); font-size: 1.15rem; font-style: italic;
+  color: var(--text2); line-height: 1.8; border-left: 3px solid var(--gold);
+  padding-left: 20px; }
+
+/* ── EXPERIENCE ── */
+.exp-item { margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.exp-item:last-child { border-bottom: none; }
+.exp-meta { display: flex; justify-content: space-between; align-items: baseline;
+  flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.exp-title { font-weight: 600; font-size: .95rem; color: var(--text); }
+.exp-dates { font-size: .78rem; color: var(--text3); letter-spacing: .04em; }
+.exp-company { font-size: .88rem; color: var(--gold); margin-bottom: 10px;
+  letter-spacing: .04em; }
+.exp-desc { list-style: none; }
+.exp-desc li { font-size: .88rem; color: var(--text2); padding: 4px 0 4px 18px;
+  position: relative; }
+.exp-desc li::before { content: '—'; position: absolute; left: 0; color: var(--gold-lt); }
+
+/* ── PROJECTS ── */
+.proj-item { margin-bottom: 24px; }
+.proj-name { font-weight: 600; font-size: .92rem; color: var(--text); margin-bottom: 4px; }
+.proj-name a { color: var(--text); }
+.proj-name a:hover { color: var(--gold); text-decoration: none; }
+.proj-desc { font-size: .87rem; color: var(--text2); margin-bottom: 6px; line-height: 1.6; }
+.proj-stack { font-size: .78rem; color: var(--text3); font-style: italic; }
+
+/* ── SKILLS (sidebar) ── */
+.skill-cat { margin-bottom: 18px; }
+.skill-cat-name { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8px; font-weight: 600; }
+.skill-list { list-style: none; }
+.skill-list li { font-size: .85rem; color: var(--text2); padding: 3px 0;
+  border-bottom: 1px dotted var(--border); }
+
+/* ── EDUCATION (sidebar) ── */
+.edu-item { margin-bottom: 20px; }
+.edu-degree { font-family: var(--serif); font-size: 1rem; font-weight: 600; color: var(--text); }
+.edu-inst   { font-size: .85rem; color: var(--text2); margin: 3px 0; }
+.edu-dates  { font-size: .78rem; color: var(--text3); }
+.edu-gpa    { font-size: .78rem; color: var(--gold); margin-top: 3px; }
+
+/* ── CERTIFICATIONS ── */
+.cert-list { list-style: none; }
+.cert-list li { font-size: .85rem; color: var(--text2); padding: 5px 0;
+  border-bottom: 1px dotted var(--border); }
+
+/* ── FOOTER ── */
+footer { border-top: 1px solid var(--border); margin-top: 40px; }
+footer .inner { max-width: 860px; margin: 0 auto; padding: 20px 32px;
+  display: flex; justify-content: space-between; font-size: .78rem; color: var(--text3);
+  letter-spacing: .04em; text-transform: uppercase; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 680px) {
+  .body-grid { grid-template-columns: 1fr; }
+  .masthead { flex-direction: column; gap: 20px; padding: 40px 0 30px; }
+  .masthead-name { font-size: 2.4rem; }
+  .top-nav { display: none; }
+}

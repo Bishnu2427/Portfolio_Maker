@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{{ data.name }} — {{ data.title }}" />
+  <title>{{ data.name }}</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <span class="brand">Portfolio</span>
+    <ul class="top-nav">
+      {% if data.experience %}<li><a href="#experience">Experience</a></li>{% endif %}
+      {% if data.projects %}<li><a href="#projects">Projects</a></li>{% endif %}
+      {% if data.skills %}<li><a href="#skills">Skills</a></li>{% endif %}
+      {% if data.education %}<li><a href="#education">Education</a></li>{% endif %}
+      {% if data.email %}<li><a href="mailto:{{ data.email }}">Contact</a></li>{% endif %}
+    </ul>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    {% if photo_base64 %}
+    <img class="masthead-photo" src="data:{{ photo_mime }};base64,{{ photo_base64 }}" alt="{{ data.name }}" />
+    {% else %}
+    <div class="masthead-avatar">{{ data.name[0] if data.name else 'E' }}</div>
+    {% endif %}
+
+    <div class="masthead-text">
+      <h1 class="masthead-name">{{ data.name }}</h1>
+      <p class="masthead-title">{{ data.title }}</p>
+      <div class="masthead-contacts">
+        {% if data.email %}<span class="mc-item"><a href="mailto:{{ data.email }}">{{ data.email }}</a></span>{% endif %}
+        {% if data.phone %}<span class="mc-sep">·</span><span class="mc-item">{{ data.phone }}</span>{% endif %}
+        {% if data.location %}<span class="mc-sep">·</span><span class="mc-item">{{ data.location }}</span>{% endif %}
+        {% if data.linkedin %}<span class="mc-sep">·</span><span class="mc-item"><a href="{{ data.linkedin }}" target="_blank">LinkedIn</a></span>{% endif %}
+        {% if data.github %}<span class="mc-sep">·</span><span class="mc-item"><a href="{{ data.github }}" target="_blank">GitHub</a></span>{% endif %}
+        {% if data.website %}<span class="mc-sep">·</span><span class="mc-item"><a href="{{ data.website }}" target="_blank">Website</a></span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body-grid">
+    <div class="main-col">
+
+      <!-- SUMMARY -->
+      {% if data.summary %}
+      <section class="section">
+        <h2 class="sec-title">Profile</h2>
+        <div class="sec-rule"></div>
+        <p class="summary-text">{{ data.summary }}</p>
+      </section>
+      {% endif %}
+
+      <!-- EXPERIENCE -->
+      {% if data.experience %}
+      <section class="section" id="experience">
+        <h2 class="sec-title">Professional Experience</h2>
+        <div class="sec-rule"></div>
+        {% for job in data.experience %}
+        <div class="exp-item">
+          <div class="exp-meta">
+            <span class="exp-title">{{ job.title }}</span>
+            <span class="exp-dates">{{ job.start_date }}{% if job.end_date %} – {{ job.end_date }}{% endif %}</span>
+          </div>
+          <p class="exp-company">{{ job.company }}{% if job.location %}, {{ job.location }}{% endif %}</p>
+          {% if job.description %}
+          <ul class="exp-desc">
+            {% for bullet in job.description %}<li>{{ bullet }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </section>
+      {% endif %}
+
+      <!-- PROJECTS -->
+      {% if data.projects %}
+      <section class="section" id="projects">
+        <h2 class="sec-title">Selected Projects</h2>
+        <div class="sec-rule"></div>
+        {% for proj in data.projects %}
+        <div class="proj-item">
+          <p class="proj-name">{% if proj.url %}<a href="{{ proj.url }}" target="_blank">{{ proj.name }}</a>{% else %}{{ proj.name }}{% endif %}</p>
+          {% if proj.description %}<p class="proj-desc">{{ proj.description }}</p>{% endif %}
+          {% if proj.technologies %}<p class="proj-stack">{{ proj.technologies | join(' · ') }}</p>{% endif %}
+        </div>
+        {% endfor %}
+      </section>
+      {% endif %}
+
+    </div><!-- /main-col -->
+
+    <aside class="side-col">
+
+      <!-- SKILLS -->
+      {% if data.skill_categories or data.skills %}
+      <section class="section" id="skills">
+        <h2 class="sec-title">Expertise</h2>
+        <div class="sec-rule"></div>
+        {% if data.skill_categories %}
+          {% for cat, items in data.skill_categories.items() %}
+          <div class="skill-cat">
+            <p class="skill-cat-name">{{ cat }}</p>
+            <ul class="skill-list">
+              {% for s in items %}<li>{{ s }}</li>{% endfor %}
+            </ul>
+          </div>
+          {% endfor %}
+        {% else %}
+          <ul class="skill-list">
+            {% for s in data.skills %}<li>{{ s }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      <!-- EDUCATION -->
+      {% if data.education %}
+      <section class="section" id="education">
+        <h2 class="sec-title">Education</h2>
+        <div class="sec-rule"></div>
+        {% for edu in data.education %}
+        <div class="edu-item">
+          <p class="edu-degree">{{ edu.degree }}{% if edu.field %} in {{ edu.field }}{% endif %}</p>
+          <p class="edu-inst">{{ edu.institution }}</p>
+          <p class="edu-dates">{{ edu.start_date }}{% if edu.end_date %} – {{ edu.end_date }}{% endif %}</p>
+          {% if edu.gpa %}<p class="edu-gpa">GPA {{ edu.gpa }}</p>{% endif %}
+        </div>
+        {% endfor %}
+      </section>
+      {% endif %}
+
+      <!-- CERTIFICATIONS -->
+      {% if data.certifications %}
+      <section class="section">
+        <h2 class="sec-title">Certifications</h2>
+        <div class="sec-rule"></div>
+        <ul class="cert-list">
+          {% for c in data.certifications %}<li>{{ c }}</li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      <!-- ACHIEVEMENTS -->
+      {% if data.achievements %}
+      <section class="section">
+        <h2 class="sec-title">Awards</h2>
+        <div class="sec-rule"></div>
+        <ul class="cert-list">
+          {% for a in data.achievements %}<li>{{ a }}</li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      <!-- LANGUAGES -->
+      {% if data.languages %}
+      <section class="section">
+        <h2 class="sec-title">Languages</h2>
+        <div class="sec-rule"></div>
+        <ul class="cert-list">
+          {% for l in data.languages %}<li>{{ l }}</li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+    </aside><!-- /side-col -->
+  </div><!-- /body-grid -->
+
+</div><!-- /wrapper -->
+
+<footer>
+  <div class="inner">
+    <span>{{ data.name }}</span>
+    <span>{{ year }}</span>
+  </div>
+</footer>
+
+</body>
+</html>

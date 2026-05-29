@@ -25,9 +25,12 @@ def get_portfolio(portfolio_id):
     portfolio = Portfolio.get_by_id(portfolio_id)
     if not portfolio:
         return jsonify({'error': 'Not found'}), 404
-    portfolio['_id'] = str(portfolio['_id'])
-    if portfolio.get('created_at'):
-        portfolio['created_at'] = portfolio['created_at'].isoformat()
-    if portfolio.get('updated_at'):
-        portfolio['updated_at'] = portfolio['updated_at'].isoformat()
-    return jsonify(portfolio)
+    # Return only fields the frontend needs (skip large cv_text / cv_data blobs)
+    return jsonify({
+        'id':            str(portfolio['_id']),
+        'style':         portfolio.get('style', ''),
+        'status':        portfolio.get('status', ''),
+        'github_url':    portfolio.get('github_url', ''),
+        'pages_url':     portfolio.get('pages_url', ''),
+        'created_at':    portfolio['created_at'].isoformat() if portfolio.get('created_at') else '',
+    })

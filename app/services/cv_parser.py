@@ -17,18 +17,34 @@ class CVParser:
 
     @staticmethod
     def _parse_pdf(path: str) -> str:
+        # pdfplumber: layout-aware, preserves reading order and column structure
+        try:
+            import pdfplumber
+            parts: list[str] = []
+            with pdfplumber.open(path) as pdf:
+                for page in pdf.pages:
+                    text = page.extract_text(x_tolerance=2, y_tolerance=3)
+                    if text:
+                        parts.append(text)
+            result = '\n'.join(parts).strip()
+            if result:
+                return result
+        except Exception as e:
+            print(f'[CVParser] pdfplumber error: {e}')
+
+        # PyPDF2 fallback
         try:
             import PyPDF2
-            text = ''
+            parts = []
             with open(path, 'rb') as f:
                 reader = PyPDF2.PdfReader(f)
                 for page in reader.pages:
-                    extracted = page.extract_text()
-                    if extracted:
-                        text += extracted + '\n'
-            return text.strip()
+                    t = page.extract_text()
+                    if t:
+                        parts.append(t)
+            return '\n'.join(parts).strip()
         except Exception as e:
-            print(f'[CVParser] PDF error: {e}')
+            print(f'[CVParser] PyPDF2 error: {e}')
             return ''
 
     @staticmethod
@@ -36,7 +52,19 @@ class CVParser:
         try:
             import docx
             doc = docx.Document(path)
-            return '\n'.join(p.text for p in doc.paragraphs if p.text).strip()
+            lines: list[str] = []
+            for para in doc.paragraphs:
+                if para.text.strip():
+                    lines.append(para.text)
+            # Also extract text from tables (skills/education often in tables)
+            for table in doc.tables:
+                for row in table.rows:
+                    row_text = '  '.join(
+                        cell.text.strip() for cell in row.cells if cell.text.strip()
+                    )
+                    if row_text:
+                        lines.append(row_text)
+            return '\n'.join(lines).strip()
         except Exception as e:
             print(f'[CVParser] DOCX error: {e}')
             return ''

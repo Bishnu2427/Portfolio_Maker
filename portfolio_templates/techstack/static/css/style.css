@@ -1,0 +1,139 @@
+/* ============================================================
+   TechStack Template — terminal/developer aesthetic
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d1117;
+  --surface:   #161b22;
+  --surface2:  #21262d;
+  --border:    #30363d;
+  --green:     #39d353;
+  --cyan:      #58a6ff;
+  --yellow:    #e3b341;
+  --pink:      #f78166;
+  --text:      #e6edf3;
+  --text2:     #8b949e;
+  --text3:     #6e7681;
+  --mono:      'JetBrains Mono', monospace;
+  --sans:      'Inter', sans-serif;
+  --radius:    6px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; }
+a { color: var(--cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── NAV ── */
+.nav { position: sticky; top: 0; background: rgba(13,17,23,.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border); z-index: 100; }
+.nav-inner { max-width: 960px; margin: 0 auto; padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { font-family: var(--mono); font-size: .95rem; color: var(--green); }
+.nav-brand span { color: var(--text2); }
+.nav-links { display: flex; gap: 24px; list-style: none; }
+.nav-links a { font-size: .85rem; color: var(--text2); font-family: var(--mono); transition: color .2s; }
+.nav-links a:hover { color: var(--green); text-decoration: none; }
+
+/* ── HERO ── */
+.hero { max-width: 960px; margin: 0 auto; padding: 64px 24px 48px; display: flex; gap: 40px; align-items: flex-start; }
+.hero-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--green); flex-shrink: 0; }
+.hero-avatar { width: 100px; height: 100px; border-radius: 50%; background: var(--surface2);
+  border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; color: var(--green); font-family: var(--mono); flex-shrink: 0; }
+.hero-text { flex: 1; }
+.hero-prompt { font-family: var(--mono); font-size: .8rem; color: var(--green); margin-bottom: 6px; }
+.hero-prompt::before { content: '$ '; color: var(--text3); }
+.hero-name { font-size: 2.4rem; font-weight: 700; line-height: 1.2; color: var(--text); margin-bottom: 8px; }
+.hero-title { font-family: var(--mono); font-size: 1rem; color: var(--cyan); margin-bottom: 16px; }
+.hero-title::before { content: '// '; color: var(--text3); }
+.hero-summary { font-size: .95rem; color: var(--text2); line-height: 1.7; max-width: 600px; margin-bottom: 20px; }
+.hero-contacts { display: flex; flex-wrap: wrap; gap: 10px; }
+.contact-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: var(--mono); font-size: .78rem; color: var(--text2); transition: border-color .2s; }
+.contact-chip:hover { border-color: var(--green); color: var(--green); text-decoration: none; }
+
+/* ── MAIN LAYOUT ── */
+.main { max-width: 960px; margin: 0 auto; padding: 0 24px 80px; display: grid;
+  grid-template-columns: 1fr 280px; gap: 40px; }
+.main-col {}
+.side-col {}
+
+/* ── SECTION ── */
+.section { margin-bottom: 48px; }
+.section-label { font-family: var(--mono); font-size: .72rem; color: var(--green);
+  text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px; }
+.section-label::before { content: '##'; color: var(--text3); }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── EXPERIENCE ── */
+.exp-item { border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); padding: 20px; margin-bottom: 16px;
+  transition: border-color .2s; }
+.exp-item:hover { border-color: var(--cyan); }
+.exp-header { display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.exp-title { font-weight: 600; color: var(--text); font-size: 1rem; }
+.exp-dates { font-family: var(--mono); font-size: .76rem; color: var(--yellow);
+  background: var(--surface2); padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+.exp-company { font-family: var(--mono); font-size: .85rem; color: var(--cyan); margin-bottom: 10px; }
+.exp-desc { list-style: none; }
+.exp-desc li { font-size: .88rem; color: var(--text2); padding: 3px 0 3px 16px;
+  position: relative; }
+.exp-desc li::before { content: '▶'; position: absolute; left: 0; font-size: .6rem;
+  color: var(--green); top: 6px; }
+
+/* ── PROJECTS ── */
+.proj-item { border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); padding: 18px; margin-bottom: 14px;
+  transition: border-color .2s; }
+.proj-item:hover { border-color: var(--green); }
+.proj-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.proj-name { font-family: var(--mono); font-weight: 700; color: var(--text); font-size: .95rem; }
+.proj-link { font-family: var(--mono); font-size: .75rem; color: var(--cyan); }
+.proj-desc { font-size: .87rem; color: var(--text2); margin-bottom: 10px; line-height: 1.6; }
+.proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.proj-tag { font-family: var(--mono); font-size: .72rem; padding: 2px 8px;
+  background: rgba(88,166,255,.1); border: 1px solid rgba(88,166,255,.3);
+  border-radius: 4px; color: var(--cyan); }
+
+/* ── SKILLS (sidebar) ── */
+.skill-cat { margin-bottom: 18px; }
+.skill-cat-name { font-family: var(--mono); font-size: .75rem; color: var(--yellow);
+  margin-bottom: 8px; text-transform: uppercase; letter-spacing: .08em; }
+.skill-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.skill-tag { font-family: var(--mono); font-size: .72rem; padding: 3px 9px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+  color: var(--text2); transition: all .15s; }
+.skill-tag:hover { border-color: var(--green); color: var(--green); }
+
+/* ── EDUCATION (sidebar) ── */
+.edu-item { border-left: 2px solid var(--border); padding-left: 14px; margin-bottom: 16px; }
+.edu-degree { font-size: .88rem; color: var(--text); font-weight: 600; }
+.edu-inst   { font-family: var(--mono); font-size: .8rem; color: var(--cyan); margin: 3px 0; }
+.edu-dates  { font-family: var(--mono); font-size: .75rem; color: var(--text3); }
+.edu-gpa    { font-family: var(--mono); font-size: .75rem; color: var(--yellow); margin-top: 4px; }
+
+/* ── CERTIFICATIONS ── */
+.cert-list { list-style: none; }
+.cert-list li { font-family: var(--mono); font-size: .82rem; color: var(--text2);
+  padding: 5px 0; border-bottom: 1px solid var(--border); }
+.cert-list li::before { content: '✓ '; color: var(--green); }
+
+/* ── FOOTER ── */
+footer { border-top: 1px solid var(--border); background: var(--surface); }
+footer .inner { max-width: 960px; margin: 0 auto; padding: 20px 24px;
+  font-family: var(--mono); font-size: .78rem; color: var(--text3);
+  display: flex; justify-content: space-between; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .hero { flex-direction: column; }
+  .main { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+}

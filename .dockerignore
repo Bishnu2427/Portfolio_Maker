@@ -1,0 +1,17 @@
+.git
+.gitignore
+.env
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.venv
+venv
+env
+uploads/
+generated_portfolios/
+*.log
+.DS_Store
+Thumbs.db
+README.md

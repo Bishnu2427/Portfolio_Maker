@@ -1,0 +1,85 @@
+version: '3.9'
+
+services:
+  # ── Main Flask application ─────────────────────────────────────────
+  web:
+    build: .
+    container_name: portfolioforge_web
+    ports:
+      - "5007:5007"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-portfolioforge-secret-change-me}
+      MONGO_URI: mongodb://mongodb:27017/portfolio_maker
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
+      LLM_PROVIDER: ${LLM_PROVIDER:-auto}   # auto | ollama | gemini
+      PORT: 5007
+    volumes:
+      - uploads:/app/uploads
+      - portfolios:/app/generated_portfolios
+      - ./portfolio_templates:/app/portfolio_templates:ro
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── MongoDB ────────────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7
+    container_name: portfolioforge_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: portfolio_maker
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Ollama — local LLM server ──────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: portfolioforge_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
+    entrypoint: >
+      /bin/sh -c "
+        ollama serve &
+        OLLAMA_PID=$$!;
+        echo 'Waiting for Ollama to be ready...';
+        until curl -sf http://localhost:11434/api/tags; do sleep 2; done;
+        echo 'Pulling model: $${OLLAMA_MODEL:-llama3.2}...';
+        ollama pull $${OLLAMA_MODEL:-llama3.2};
+        echo 'Model ready.';
+        wait $$OLLAMA_PID
+      "
+    restart: unless-stopped
+    # Uncomment for GPU support (requires NVIDIA Container Toolkit):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+volumes:
+  mongo_data:
+  ollama_models:
+  uploads:
+  portfolios:

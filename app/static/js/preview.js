@@ -2,7 +2,7 @@
 //  PortfolioForge — Preview Page
 // ============================================================
 
-let previewPort = null;
+const PREVIEW_URL = `/portfolio-view/${PORTFOLIO_ID}`;
 
 document.addEventListener('DOMContentLoaded', () => {
   loadPortfolio();
@@ -10,19 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadPortfolio() {
   try {
-    const res = await fetch(`/api/portfolio/${PORTFOLIO_ID}`);
+    const res  = await fetch(`/api/portfolio/${PORTFOLIO_ID}`);
     const data = await res.json();
     if (data.error) { showError(data.error); return; }
 
-    previewPort = data.port;
-
-    if (previewPort) {
-      const url = `http://localhost:${previewPort}`;
-      document.getElementById('preview-url-text').textContent = url;
-      loadIframe(url);
-    } else {
-      showError('Preview server not running. Please regenerate your portfolio.');
-    }
+    document.getElementById('preview-url-text').textContent = PREVIEW_URL;
+    loadIframe(PREVIEW_URL);
 
     if (data.status === 'deployed' && data.pages_url) {
       showDeployResult(data.github_url, data.pages_url);
@@ -33,14 +26,14 @@ async function loadPortfolio() {
 }
 
 function loadIframe(url) {
-  const iframe = document.getElementById('preview-iframe');
+  const iframe  = document.getElementById('preview-iframe');
   const loading = document.getElementById('iframe-loading');
 
   iframe.onload = () => { loading.style.display = 'none'; };
   iframe.src = url;
 
-  // Fallback: hide loading after 6s
-  setTimeout(() => { loading.style.display = 'none'; }, 6000);
+  // Fallback: hide loading spinner after 8s
+  setTimeout(() => { loading.style.display = 'none'; }, 8000);
 }
 
 // ---- Device Views ----
@@ -92,25 +85,24 @@ async function applyModification() {
 
 // ---- Refresh ----
 function refreshPreview() {
-  const iframe = document.getElementById('preview-iframe');
+  const iframe  = document.getElementById('preview-iframe');
   const loading = document.getElementById('iframe-loading');
   loading.style.display = 'flex';
-  iframe.src = iframe.src;
+  // Force reload by busting cache
+  iframe.src = PREVIEW_URL + '?t=' + Date.now();
 }
 
 function openInNewTab() {
-  if (previewPort) {
-    window.open(`http://localhost:${previewPort}`, '_blank');
-  }
+  window.open(PREVIEW_URL, '_blank');
 }
 
 // ---- Deploy ----
 async function deployToGitHub() {
   const token = document.getElementById('github-token').value.trim();
-  const repo = document.getElementById('repo-name').value.trim();
+  const repo  = document.getElementById('repo-name').value.trim();
 
   if (!token) { showToast('Please enter your GitHub token', 'warning'); return; }
-  if (!repo) { showToast('Please enter a repository name', 'warning'); return; }
+  if (!repo)  { showToast('Please enter a repository name', 'warning'); return; }
 
   const btn = document.getElementById('deploy-btn');
   btn.disabled = true;
@@ -141,7 +133,7 @@ async function deployToGitHub() {
 
 function showDeployResult(repoUrl, pagesUrl) {
   const result = document.getElementById('deploy-result');
-  const urls = document.getElementById('deploy-urls');
+  const urls   = document.getElementById('deploy-urls');
   urls.innerHTML = `
     <a href="${repoUrl}" target="_blank">View Repository →</a>
     <a href="${pagesUrl}" target="_blank">Live Site: ${pagesUrl} →</a>
@@ -152,7 +144,7 @@ function showDeployResult(repoUrl, pagesUrl) {
 // ---- Toast ----
 function showToast(msg, type = 'info') {
   const colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#06b6d4' };
-  const toast = document.createElement('div');
+  const toast  = document.createElement('div');
   toast.style.cssText = `
     position:fixed;bottom:24px;right:24px;z-index:9999;
     background:${colors[type] || colors.info};color:#fff;

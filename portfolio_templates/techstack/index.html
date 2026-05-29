@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ data.name }} | Dev Portfolio</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="nav-brand">{{ data.name.split()[0] | lower if data.name else 'dev' }}<span>@portfolio</span>:~$</span>
+    <ul class="nav-links">
+      {% if data.experience %}<li><a href="#experience">experience</a></li>{% endif %}
+      {% if data.projects %}<li><a href="#projects">projects</a></li>{% endif %}
+      {% if data.skills %}<li><a href="#skills">skills</a></li>{% endif %}
+      {% if data.education %}<li><a href="#education">education</a></li>{% endif %}
+      {% if data.email %}<li><a href="mailto:{{ data.email }}">contact</a></li>{% endif %}
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  {% if photo_base64 %}
+  <img class="hero-photo" src="data:{{ photo_mime }};base64,{{ photo_base64 }}" alt="{{ data.name }}" />
+  {% else %}
+  <div class="hero-avatar">{{ data.name[0] if data.name else '?' }}</div>
+  {% endif %}
+
+  <div class="hero-text">
+    <p class="hero-prompt">whoami</p>
+    <h1 class="hero-name">{{ data.name }}</h1>
+    <p class="hero-title">{{ data.title }}</p>
+    {% if data.summary %}
+    <p class="hero-summary">{{ data.summary }}</p>
+    {% endif %}
+    <div class="hero-contacts">
+      {% if data.email %}<a class="contact-chip" href="mailto:{{ data.email }}">✉ {{ data.email }}</a>{% endif %}
+      {% if data.phone %}<span class="contact-chip">☎ {{ data.phone }}</span>{% endif %}
+      {% if data.location %}<span class="contact-chip">📍 {{ data.location }}</span>{% endif %}
+      {% if data.github %}<a class="contact-chip" href="{{ data.github }}" target="_blank">⌥ GitHub</a>{% endif %}
+      {% if data.linkedin %}<a class="contact-chip" href="{{ data.linkedin }}" target="_blank">in LinkedIn</a>{% endif %}
+      {% if data.website %}<a class="contact-chip" href="{{ data.website }}" target="_blank">🌐 Website</a>{% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+  <div class="main-col">
+
+    <!-- EXPERIENCE -->
+    {% if data.experience %}
+    <section class="section" id="experience">
+      <h2 class="section-label">experience</h2>
+      {% for job in data.experience %}
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-title">{{ job.title }}</span>
+          <span class="exp-dates">{{ job.start_date }}{% if job.start_date and job.end_date %} → {% endif %}{{ job.end_date }}</span>
+        </div>
+        <p class="exp-company">{{ job.company }}{% if job.location %} · {{ job.location }}{% endif %}</p>
+        {% if job.description %}
+        <ul class="exp-desc">
+          {% for bullet in job.description %}<li>{{ bullet }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- PROJECTS -->
+    {% if data.projects %}
+    <section class="section" id="projects">
+      <h2 class="section-label">projects</h2>
+      {% for proj in data.projects %}
+      <div class="proj-item">
+        <div class="proj-header">
+          <span class="proj-name">{{ proj.name }}</span>
+          {% if proj.url %}<a class="proj-link" href="{{ proj.url }}" target="_blank">→ view</a>{% endif %}
+        </div>
+        {% if proj.description %}<p class="proj-desc">{{ proj.description }}</p>{% endif %}
+        {% if proj.technologies %}
+        <div class="proj-tags">
+          {% for tech in proj.technologies %}<span class="proj-tag">{{ tech }}</span>{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+  </div><!-- /main-col -->
+
+  <aside class="side-col">
+
+    <!-- SKILLS -->
+    {% if data.skill_categories or data.skills %}
+    <section class="section" id="skills">
+      <h2 class="section-label">skills</h2>
+      {% if data.skill_categories %}
+        {% for cat, items in data.skill_categories.items() %}
+        <div class="skill-cat">
+          <div class="skill-cat-name">{{ cat }}</div>
+          <div class="skill-tags">
+            {% for s in items %}<span class="skill-tag">{{ s }}</span>{% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="skill-tags">
+          {% for s in data.skills %}<span class="skill-tag">{{ s }}</span>{% endfor %}
+        </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <!-- EDUCATION -->
+    {% if data.education %}
+    <section class="section" id="education">
+      <h2 class="section-label">education</h2>
+      {% for edu in data.education %}
+      <div class="edu-item">
+        <p class="edu-degree">{{ edu.degree }}{% if edu.field %} in {{ edu.field }}{% endif %}</p>
+        <p class="edu-inst">{{ edu.institution }}</p>
+        <p class="edu-dates">{{ edu.start_date }}{% if edu.end_date %} – {{ edu.end_date }}{% endif %}</p>
+        {% if edu.gpa %}<p class="edu-gpa">GPA: {{ edu.gpa }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- CERTIFICATIONS -->
+    {% if data.certifications %}
+    <section class="section">
+      <h2 class="section-label">certs</h2>
+      <ul class="cert-list">
+        {% for c in data.certifications %}<li>{{ c }}</li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <!-- ACHIEVEMENTS -->
+    {% if data.achievements %}
+    <section class="section">
+      <h2 class="section-label">achievements</h2>
+      <ul class="cert-list">
+        {% for a in data.achievements %}<li>{{ a }}</li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+  </aside><!-- /side-col -->
+</div><!-- /main -->
+
+<footer>
+  <div class="inner">
+    <span>{{ data.name }} · {{ year }}</span>
+    {% if data.email %}<span>{{ data.email }}</span>{% endif %}
+  </div>
+</footer>
+
+</body>
+</html>

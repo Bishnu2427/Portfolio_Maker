@@ -2,6 +2,7 @@ flask
 flask-pymongo
 pymongo
 google-genai
+pdfplumber
 PyPDF2
 python-docx
 Pillow
@@ -11,3 +12,4 @@ flask-cors
 psutil
 Werkzeug
 Jinja2
+requests

@@ -295,3 +295,18 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 
 /* ---- Utils ---- */
 .mt-4 { margin-top: 16px; }
+
+
+/* ---- New template thumbnails ---- */
+.techstack-thumb { background: #0d1117; display: flex; flex-direction: column; justify-content: center; gap: 5px; padding: 10px; }
+.th-terminal { width: 100%; }
+.th-dots { display: flex; gap: 4px; margin-bottom: 6px; }
+.dot-r { width: 7px; height: 7px; border-radius: 50%; background: #ff5f57; }
+.dot-y { width: 7px; height: 7px; border-radius: 50%; background: #ffbd2e; }
+.dot-g { width: 7px; height: 7px; border-radius: 50%; background: #28c840; }
+.green-bar { background: #39d353 !important; height: 3px !important; border-radius: 2px; }
+
+.executive-thumb { background: #fafaf8; display: flex; flex-direction: column; justify-content: center; gap: 5px; padding: 10px; }
+.th-exec-name { height: 6px; width: 55%; background: #1a1a2e; border-radius: 2px; }
+.th-exec-rule { height: 1px; width: 85%; background: #c9a84c; margin: 3px 0; }
+.exec-bar { background: #d4d4d0 !important; height: 3px !important; border-radius: 2px; }
